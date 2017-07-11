@@ -337,7 +337,7 @@ def gameLoop(title) :
         for blocks in targets :
             for bullet in shells :
                 if (blocks[0] - bullet[0]) ** 2 + (blocks[1] - bullet[1]) ** 2 < min_distance ** 2 :
-                    blocks[0] -= 1
+                    blocks[0] -= 10
                     blocks[1] += 10 * random.choice([int(math.copysign(1, blocks[1] - bullet[1]))] + [-1, 1] * (MAX_SCORE / abs(score + 1)))
                     print blocks[0]
             if len(attack) <= len(targets) or blocks[1] == lead_y:
