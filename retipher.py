@@ -21,7 +21,7 @@ display_width = 72 * int(desktopWidth/100)
 display_height = 95 * int(desktopHeight/100)
 
 gameDisplay = pygame.display.set_mode((display_width, display_height))
-pygame.display.set_caption("Maraud")
+pygame.display.set_caption("Retipher")
 
 #Loading the required images/sprites. backg is scaled to the whole display_size so that it may be accomodated in just one blit on the screen.
 
@@ -101,7 +101,7 @@ def gameLoop(title) :
         message_to_screen("REMEMBER :", color=red, vert_displacement=-60, size=23, text_font="arial")
         message_to_screen("Don't use too many shells, as it may upset the enemy", color=black, vert_displacement=-20, size=17, text_font="timesnewroman")
         message_to_screen("Your score increaments for each succesfull attack on enemy.", color=black, vert_displacement=10, size=17, text_font="timesnewroman")
-        message_to_screen("Your score decreaments either when you get hit by enemy or the enemy crosses you. Game Over at score <= -100", color=black, vert_displacement=40, size=17, text_font="timesnewroman")
+        message_to_screen("Your score decreaments either when you get hit by enemy or the enemy crosses you. Game Over at score <= -500", color=black, vert_displacement=40, size=17, text_font="timesnewroman")
         message_to_screen("Use Arrow keys for vertical movement and 'Right-arrow key' to fire bullets.", color=black, vert_displacement=70, size=17, text_font="timesnewroman")
         message_to_screen("If you fail, press Q to Quit and C to try again. Press P to Pause and R to restart", color=black, vert_displacement=100, size=17, text_font="timesnewroman")
         message_to_screen("Press C to start the game now !", color=black, vert_displacement=130, size=17, text_font="timesnewroman")
@@ -116,13 +116,12 @@ def gameLoop(title) :
                 2. ELements are removed when the bullet either goes off the display or it hits some enemy (in second case, both enemy
                 and bullet disappear).
     targets => The array maintaining the co-ordinates of enemies.
-    attack => The array maintaining coordinates of the bullets shot by the enemies.
+    attack => The array maintaining coordinates of the bullets shot by the enemies as retaliation.
     """
 
     shells = []
     targets = []
     attack = []
-    oppose = collections.defaultdict(int)
 
     """
     num_targets => The number of targets present at a instant of time on display. These increase when you shoot too much bullets
@@ -340,6 +339,9 @@ def gameLoop(title) :
                     blocks[0] -= 1
                     blocks[1] += 10 * random.choice([int(math.copysign(1, blocks[1] - bullet[1]))] + [-1, 1] * (MAX_SCORE / abs(score + 1)))
                     print blocks[0]
+
+            # If the number of retaliating bullets are less than nuber of targets
+            # or both the enemy and the player are at the same level, then shoot some retaliating bullets
             if len(attack) <= len(targets) or blocks[1] == lead_y:
                 attack.append([blocks[0], blocks[1]])
 
