@@ -140,14 +140,6 @@ def gameLoop(title) :
     step_size = 10
 
     """
-    max_shell => The variable which would decide if the enemies are "upset" or not.
-    min_shell => The variable which would set the number of min_enemies on the screen. (Actually, min_enemies = min_shell + 1)
-    """
-
-    max_shell = 10
-    min_shell = 1
-
-    """
     multiplier => The factor by which enemies would increase if enemies are "upset".
     score => This variable store the current score, thus initialised to 0.
     score_increament, score_decreament => self-explanatory.
@@ -174,6 +166,12 @@ def gameLoop(title) :
     random_array_x = [random.choice([-1, 1, 0, -1, -1, 0, -1, 0, -1] * 100) for _ in xrange(smooth_degree)]
 
     min_distance = 100
+
+    # Maximum bullets that can be fired without overcharging the gun
+    max_bullets = 8
+
+    # Boolean variable telling if the gun is overcharged or not
+    gun_overcharged = 0
 
     FPS = 15
 
@@ -283,11 +281,6 @@ def gameLoop(title) :
             rand_Y = random.randint(2, 15) * target_size
             targets.append([display_width, random.choice([rand_Y, lead_y])])
 
-        if len(shells) > 3 * max_shell :
-            num_targets = (len(shells) - len(targets)) * multiplier
-        else :
-            num_targets = min_shell
-
         total_targets = len(targets)
 
 
@@ -306,6 +299,13 @@ def gameLoop(title) :
         shells = filter(lambda x : x[0] <= display_width and 0 <= x[1] <= display_height, map(lambda x : [x[0] + step_size, x[1]], shells))
 
         gameDisplay.blit(backg_new, (0, 0))
+
+        if len(shells) >= max_bullets :
+            message_to_screen("Easy soldier - Bullets don't come for free, Use them judiciously", color=red, vert_displacement=40, size=20, text_font="helvetica", bold="True")
+            gun_overcharged = 1
+            shells = shells[: max_bullets]
+        else :
+            gun_overcharged = 0
 
         for bullet in shells :
             gameDisplay.blit(shell_trident, [bullet[0], bullet[1]])
@@ -338,7 +338,6 @@ def gameLoop(title) :
                 if (blocks[0] - bullet[0]) ** 2 + (blocks[1] - bullet[1]) ** 2 < min_distance ** 2 :
                     blocks[0] -= 1
                     blocks[1] += 10 * random.choice([int(math.copysign(1, blocks[1] - bullet[1]))] + [-1, 1] * (MAX_SCORE / abs(score + 1)))
-                    print blocks[0]
 
             # If the number of retaliating bullets are less than nuber of targets
             # or both the enemy and the player are at the same level, then shoot some retaliating bullets
@@ -350,7 +349,8 @@ def gameLoop(title) :
         for bullet in shells :
             for blocks in targets :
                 if blocks[0] <= bullet[0] <= blocks[0] + target_size and blocks[1] <= bullet[1] <= blocks[1] + target_size :
-                    del targets[targets.index(blocks)]
+                    if not gun_overcharged :
+                        del targets[targets.index(blocks)]
                     bullet[0] = display_width
                     score += score_increament
 
